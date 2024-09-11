@@ -13,15 +13,12 @@ functions:
       - type: oscar
         cluster_id: oscar-local
         service_name: grayifyr1
-        priority: 101
       - type: oscar
         cluster_id: oscar-other
         service_name: grayifyr2
-        priority: 101
       - type: oscar
         cluster_id: oscar-pi
         service_name: grayifyr3
-        priority: 101
       input:
       - storage_provider: minio
         path: grayifyr0/in

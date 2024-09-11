@@ -140,6 +140,26 @@ if atrib_federation is not None:
             }
     
             replica_name = list(section.keys())[0]
+            
+            items = list(section[replica_name].items())
+            new_dict = {}
+
+# Recorremos las claves actuales e insertamos en la nueva estructura
+            for i, (clave, valor) in enumerate(items):
+                 if i == posicion+1:
+        # Insertar la nueva clave en la posición indicada
+                     new_dict[ 'federation'] = fdl['functions']['oscar'][0][orchestrator_name]['federation']
+                     new_dict['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
+    # Agregamos la clave y valor original
+            new_dict[clave] = valor
+
+# Si la posición es mayor que el número de elementos, agregamos al final
+            if len(items) <= posicion+1:
+                new_dict['federation'] = fdl['functions']['oscar'][0][orchestrator_name]['federation']
+                new_dict['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
+
+            section[replica_name]=new_dict
+        
     #[section_name].append(['delegation']=copy.copy(delegation))
             section[replica_name]['federation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['federation'])
             section[replica_name]['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
