@@ -1,0 +1,102 @@
+functions:
+  oscar:
+  - oscar-replica1:
+      name: grayifyr0
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      federation: true
+      delegation: random
+      log_level: DEBUG
+      replicas:
+      - type: oscar
+        cluster_id: oscar-local
+        service_name: grayifyr1
+        priority: 101
+      - type: oscar
+        cluster_id: oscar-other
+        service_name: grayifyr2
+        priority: 101
+      - type: oscar
+        cluster_id: oscar-pi
+        service_name: grayifyr3
+        priority: 101
+      input:
+      - storage_provider: minio
+        path: grayifyr0/in
+      output:
+      - storage_provider: minio
+        path: grayifyr0/out
+  - oscar-local:
+      name: grayifyr1
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      log_level: DEBUG 
+      input:
+      - storage_provider: minio
+        path: grayifyr1/in
+      output:
+      - storage_provider: minio
+        path: grayifyr1/out
+  - oscar-pi:
+      name: grayifyr1
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      log_level: DEBUG 
+      input:
+      - storage_provider: minio
+        path: grayifyr3/in
+      output:
+      - storage_provider: minio
+        path: grayifyr3/out
+  - oscar-other:
+      name: grayifyr2
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      log_level: DEBUG 
+      input:
+      - storage_provider: minio
+        path: grayifyr2/in
+      output:
+      - storage_provider: minio
+        path: grayifyr2/out
+clusters:
+  oscar-local:
+    endpoint: http://158.42.105.48
+    auth_user: oscar
+    auth_password: OWRkYmRj 
+    ssl_verify: false
+    memory: 256Mi 
+  oscar-replica1:
+    endpoint: https://condescending-albattani4.im.grycap.net
+    auth_user: oscar
+    auth_password: oscar123
+    ssl_verify: true
+    memory: 256Mi
+  oscar-other:
+    endpoint: https://funny-kalam8.im.grycap.net
+    auth_user: oscar
+    auth_password: oscar123
+    ssl_verify: true
+    memory: 256Mi
+  oscar-pi:
+    endpoint: https://graspi.im.grycap.net
+    auth_user: oscar
+    auth_password: aisprint-2023-raspi-oscar
+    ssl_verify: true
+    memory: 256Mi     
+storage_providers:
+  minio:
+    oscar-replica1:
+      endpoint: 'https://minio.graspi.im.grycap.net' #https://minio.frosty-grothendieck5.im.grycap.net'
+      region: us-east-1
+      access_key: minio
+      secret_key: minio-aisprint-2021
+      verify: false

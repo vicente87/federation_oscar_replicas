@@ -2,12 +2,11 @@ import yaml
 import copy
 import os
 import shutil
-from oscar_python.client import Client # api de python para OSCAR
 
 
 def execute_fdl (directory,script):
     
-    
+    print(script)
 
 # Copiar el archivo
     try:
@@ -35,54 +34,6 @@ def execute_fdl (directory,script):
     if add==0:
         print("No existen ficheros yaml para ejecutar")
         
-def create_service(directory, script):
-    
-
-# Copiar el archivo
-    try:
-        shutil.copy(script, directory+'/'+script)
-        print(f"Archivo {script} copiado a /{directory}.")
-    except FileNotFoundError:
-        print(f"El archivo {script} no se encontró.")
-    except PermissionError:
-        print(f"No se tienen permisos para copiar el archivo {script}.")
-    except Exception as e:
-        print(f"Ocurrió un error: {e}")
-    
-    add=0
-# Listar los elementos del directorio
-    if os.listdir(directory):
-        for archive in os.listdir(directory):
-            ruta_completa = os.path.join(directory, archive)
-            fedecluster="fedecluster" in ruta_completa
-            if os.path.isfile(ruta_completa) and ruta_completa.endswith('.yaml') and fedecluster:  # Verificar si es un archivo
-                
-                with open(ruta_completa, 'r') as file:
-                    fdl= yaml.safe_load(file)
-                name = fdl['functions']['oscar'][0]
-                id_cluster=list(name.keys())[0]
-                print("Executing oscar_python... "+ ruta_completa + ' in ClusterID '+ id_cluster)
-                endpoint=fdl['clusters'][id_cluster]['endpoint']
-                auth_user=fdl['clusters'][id_cluster]['auth_user']
-                auth_password=fdl['clusters'][id_cluster]['auth_password']
-                ssl_verify=fdl['clusters'][id_cluster]['ssl_verify']
-
-
-                client = Client(id_cluster,endpoint, auth_user, auth_password, ssl_verify)
-                services = client.list_services()
-                print(services)
-                #Creando el servicio replicas
-                #try:
-                 #   client.create_service(ruta_completa)
-                  #  print("Service created")
-                #except Exception as ex:
-                 #   print("Error creating service: ", ex)
-                add=add+1
-    if add==0:
-        print("No existen ficheros yaml para ejecutar")
-    
-
-
 
 # Ruta del archivo YAML
 ruta_fdl_inicial = 'federation.yaml'
@@ -188,8 +139,7 @@ if atrib_federation is not None:
         
         #Ejecutar los fdl creados
         script=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['script'])
-        #execute_fdl(directory,script)
-        create_service(directory,script)
+        execute_fdl(directory,script)
         fdl_directory = directory+'/created_federation.yaml'
 
         with open(fdl_directory, 'w') as file:
