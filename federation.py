@@ -7,9 +7,7 @@ from oscar_python.client import Client # api de python para OSCAR
 
 def execute_fdl (directory,script):
     
-    
-
-# Copiar el archivo
+    # Copiar el archivo
     try:
         shutil.copy(script, directory+'/'+script)
         print(f"Archivo {script} copiado a /{directory}.")
@@ -81,7 +79,20 @@ def create_service(directory, script):
     if add==0:
         print("No existen ficheros yaml para ejecutar")
     
+def create_yaml(directory,name_cluster,data,tipo):
+    # Verificar si la carpeta existe, si no, crearla
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if tipo=='orchestrador':
+        ruta_archivo =directory+"/fedecluster_"+ name_cluster.replace("-", "_")+'_orchestrator.yaml'
+    elif tipo=='replica':
+        ruta_archivo = directory+"/fedecluster_"+name_cluster.replace("-", "_")+'.yaml'
+    else:
+        print("ERROR con el tipo de cluster")
+    with open(ruta_archivo, 'w') as file:
+        yaml.dump(data, file, sort_keys=False)
 
+    print(f"FDL guardado en {ruta_archivo}")
 
 
 # Ruta del archivo YAML
@@ -114,14 +125,16 @@ if atrib_federation is not None:
         directory = 'replicas'
 
 # Verificar si la carpeta existe, si no, crearla
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        ruta_archivo =directory+"/fedecluster_"+ orchestrator_name.replace("-", "_")+'_orchestrator.yaml'
+        type_cluster='orchestrador'
+        create_yaml(directory,orchestrator_name,orchestrator, type_cluster)
+        #if not os.path.exists(directory):
+            #os.makedirs(directory)
+        #ruta_archivo =directory+"/fedecluster_"+ orchestrator_name.replace("-", "_")+'_orchestrator.yaml'
 
-        with open(ruta_archivo, 'w') as file:
-            yaml.dump(orchestrator, file, sort_keys=False)
+        #with open(ruta_archivo, 'w') as file:
+        #    yaml.dump(orchestrator, file, sort_keys=False)
 
-        print(f"FDL guardado en {ruta_archivo}")
+       # print(f"FDL guardado en {ruta_archivo}")
 
         orchestrator_replicas = fdl['functions']['oscar'][0][orchestrator_name]['replicas']
         orchestrator_output = fdl['functions']['oscar'][0][orchestrator_name]['output']
@@ -132,6 +145,10 @@ if atrib_federation is not None:
 
         delegation= fdl['functions']['oscar'][0][orchestrator_name]['delegation']
         section_storage = list(fdl['storage_providers']['minio'])
+        
+        claves = list(fdl['functions']['oscar'][0][orchestrator_name].keys())
+        posicion = claves.index('federation')
+        
     
     # Crear fdl de servicios replicas 
         for section in fdl['functions']['oscar'][1:]:
@@ -143,26 +160,28 @@ if atrib_federation is not None:
             
             items = list(section[replica_name].items())
             new_dict = {}
-
+            
 # Recorremos las claves actuales e insertamos en la nueva estructura
             for i, (clave, valor) in enumerate(items):
-                 if i == posicion+1:
+                if i == posicion+1:
         # Insertar la nueva clave en la posición indicada
-                     new_dict[ 'federation'] = fdl['functions']['oscar'][0][orchestrator_name]['federation']
-                     new_dict['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
+                    new_dict[ 'federation'] = fdl['functions']['oscar'][0][orchestrator_name]['federation']
+                    new_dict['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
     # Agregamos la clave y valor original
-            new_dict[clave] = valor
+                new_dict[clave] = valor
 
 # Si la posición es mayor que el número de elementos, agregamos al final
-            if len(items) <= posicion+1:
-                new_dict['federation'] = fdl['functions']['oscar'][0][orchestrator_name]['federation']
-                new_dict['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
+                if len(items) <= posicion+1:
+                    new_dict['federation'] = fdl['functions']['oscar'][0][orchestrator_name]['federation']
+                    new_dict['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
 
             section[replica_name]=new_dict
-        
+            
+
+            
     #[section_name].append(['delegation']=copy.copy(delegation))
-            section[replica_name]['federation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['federation'])
-            section[replica_name]['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
+           # section[replica_name]['federation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['federation'])
+            #section[replica_name]['delegation']=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['delegation'])
             section[replica_name]['replicas'] = copy.deepcopy(orchestrator_replicas)
     #section[section_name]['output'].append(first_output)
     # Verifica que 'output' sea una lista antes de intentar agregarle elementos
@@ -189,17 +208,20 @@ if atrib_federation is not None:
                 
    
     # Cargar datos para generar fdl de cada servicio que tiene el sistema de replicas
-            element['functions']['oscar'].append( section)
+            element['functions']['oscar'].append(section)
             element['clusters']=copy.copy(fdl['clusters'])
             element['storage_providers']=copy.copy(fdl['storage_providers'])
             fdl_yaml_replica = yaml.dump(element, sort_keys=False)            
     #print(fdl_yaml_replica)
-            ruta_archivo = directory+"/fedecluster_"+replica_name.replace("-", "_")+'.yaml'
+            type_cluster='replica'
+            #print(element)
+            create_yaml(directory,replica_name,element, type_cluster)
+            #ruta_archivo = directory+"/fedecluster_"+replica_name.replace("-", "_")+'.yaml'
 
-            with open(ruta_archivo, 'w') as file:
-                yaml.dump(element, file, sort_keys=False)
+            #with open(ruta_archivo, 'w') as file:
+                #yaml.dump(element, file, sort_keys=False)
 
-            print(f"FDL guardado en {ruta_archivo}")
+            #print(f"FDL guardado en {ruta_archivo}")
                 
 
 # Convertir el diccionario modificado a YAML para ver el resultado
@@ -208,8 +230,12 @@ if atrib_federation is not None:
         
         #Ejecutar los fdl creados
         script=copy.copy(fdl['functions']['oscar'][0][orchestrator_name]['script'])
+        
+        # Desplegar servicios en los cluster
+        
         #execute_fdl(directory,script)
-        create_service(directory,script)
+        #create_service(directory,script)
+        
         fdl_directory = directory+'/created_federation.yaml'
 
         with open(fdl_directory, 'w') as file:

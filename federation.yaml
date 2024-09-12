@@ -39,7 +39,7 @@ functions:
       - storage_provider: minio
         path: grayifyr1/out
   - oscar-pi:
-      name: grayifyr1
+      name: grayifyr3
       cpu: '0.5'
       memory: 0.5Gi
       image: ghcr.io/grycap/imagemagick

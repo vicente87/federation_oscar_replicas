@@ -26,8 +26,17 @@ functions:
       - storage_provider: minio
         path: grayifyr0/out
   - oscar-local:
+      name: grayifyr1
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      log_level: DEBUG
       federation: true
       delegation: random
+      input:
+      - storage_provider: minio
+        path: grayifyr1/in
       output:
       - storage_provider: minio
         path: grayifyr1/out
@@ -44,8 +53,17 @@ functions:
         cluster_id: oscar-pi
         service_name: grayifyr3
   - oscar-pi:
+      name: grayifyr3
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      log_level: DEBUG
       federation: true
       delegation: random
+      input:
+      - storage_provider: minio
+        path: grayifyr3/in
       output:
       - storage_provider: minio
         path: grayifyr3/out
@@ -62,8 +80,17 @@ functions:
         cluster_id: oscar-replica1
         service_name: grayifyr0
   - oscar-other:
+      name: grayifyr2
+      cpu: '0.5'
+      memory: 0.5Gi
+      image: ghcr.io/grycap/imagemagick
+      script: script.sh
+      log_level: DEBUG
       federation: true
       delegation: random
+      input:
+      - storage_provider: minio
+        path: grayifyr2/in
       output:
       - storage_provider: minio
         path: grayifyr2/out
