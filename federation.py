@@ -70,12 +70,12 @@ def create_service(directory, script):
                 services = client.list_services()
                 print(services)
                 #Creando el servicio replicas
-                #try:
-                 #   client.create_service(ruta_completa)
-                  #  print("Service created")
+               # try:
+                  #  client.create_service(ruta_completa)
+                    #print("Service created")
                 #except Exception as ex:
-                 #   print("Error creating service: ", ex)
-                add=add+1
+                    #print("Error creating service: ", ex)
+                #add=add+1
     if add==0:
         print("No existen ficheros yaml para ejecutar")
     
@@ -234,7 +234,7 @@ if atrib_federation is not None:
         # Desplegar servicios en los cluster
         
         #execute_fdl(directory,script)
-        #create_service(directory,script)
+        create_service(directory,script)
         
         fdl_directory = directory+'/created_federation.yaml'
 

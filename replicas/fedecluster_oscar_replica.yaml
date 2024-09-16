@@ -1,6 +1,6 @@
 functions:
   oscar:
-  - oscar-local:
+  - oscar-replica:
       name: grayifyr1
       cpu: '0.5'
       memory: 0.5Gi
@@ -24,14 +24,11 @@ functions:
       - type: oscar
         cluster_id: oscar-other
         service_name: grayifyr2
-      - type: oscar
-        cluster_id: oscar-pi
-        service_name: grayifyr3
 clusters:
-  oscar-local:
-    endpoint: http://158.42.105.48
+  oscar-replica:
+    endpoint: https://great-darwin5.im.grycap.net
     auth_user: oscar
-    auth_password: OWRkYmRj
+    auth_password: oscar123
     ssl_verify: false
     memory: 256Mi
   oscar-replica1:
@@ -46,17 +43,11 @@ clusters:
     auth_password: oscar123
     ssl_verify: true
     memory: 256Mi
-  oscar-pi:
-    endpoint: https://graspi.im.grycap.net
-    auth_user: oscar
-    auth_password: aisprint-2023-raspi-oscar
-    ssl_verify: true
-    memory: 256Mi
 storage_providers:
   minio:
     oscar-replica1:
-      endpoint: https://minio.graspi.im.grycap.net
+      endpoint: https://minio.condescending-albattani4.im.grycap.net
       region: us-east-1
       access_key: minio
-      secret_key: minio-aisprint-2021
+      secret_key: minio123
       verify: false

@@ -1,7 +1,7 @@
 functions:
   oscar:
-  - oscar-pi:
-      name: grayifyr3
+  - oscar-replica:
+      name: grayifyr1
       cpu: '0.5'
       memory: 0.5Gi
       image: ghcr.io/grycap/imagemagick
@@ -11,27 +11,24 @@ functions:
       delegation: random
       input:
       - storage_provider: minio
-        path: grayifyr3/in
+        path: grayifyr1/in
       output:
       - storage_provider: minio
-        path: grayifyr3/out
+        path: grayifyr1/out
       - storage_provider: minio.oscar-replica1
         path: grayifyr0/out
       replicas:
       - type: oscar
-        cluster_id: oscar-local
-        service_name: grayifyr1
+        cluster_id: oscar-replica1
+        service_name: grayifyr0
       - type: oscar
         cluster_id: oscar-other
         service_name: grayifyr2
-      - type: oscar
-        cluster_id: oscar-replica1
-        service_name: grayifyr0
 clusters:
-  oscar-local:
-    endpoint: http://158.42.105.48
+  oscar-replica:
+    endpoint: https://great-darwin5.im.grycap.net
     auth_user: oscar
-    auth_password: OWRkYmRj
+    auth_password: oscar123
     ssl_verify: false
     memory: 256Mi
   oscar-replica1:
@@ -44,12 +41,6 @@ clusters:
     endpoint: https://funny-kalam8.im.grycap.net
     auth_user: oscar
     auth_password: oscar123
-    ssl_verify: true
-    memory: 256Mi
-  oscar-pi:
-    endpoint: https://graspi.im.grycap.net
-    auth_user: oscar
-    auth_password: aisprint-2023-raspi-oscar
     ssl_verify: true
     memory: 256Mi
 storage_providers:
